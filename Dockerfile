@@ -1,13 +1,35 @@
-## -*- docker-image-name: "scaleway/alpine:latest" -*-
-FROM multiarch/alpine:x86_64-v3.3
-# following 'FROM' lines are used dynamically thanks do the image-builder
-# which dynamically update the Dockerfile if needed.
-#FROM multiarch/alpine:armhf-v3.3   # arch=armv7l
-#FROM multiarch/alpine:x86-v3.3    # arch=i386
+FROM multiarch/alpine:x86_64-v3.6 as node-exporter
+ARG VERSION=0.14.0
+
+RUN apk --no-cache add wget ca-certificates \
+    && mkdir -p /tmp/install /tmp/dist \
+    && wget -O /tmp/install/node_exporter.tar.gz https://github.com/prometheus/node_exporter/releases/download/v$VERSION/node_exporter-$VERSION.linux-amd64.tar.gz \
+    && apk add --no-cache libc6-compat \
+    && cd /tmp/install \
+    && tar --strip-components=1 -xzf node_exporter.tar.gz \
+    && mv node_exporter /bin/node_exporter
+
+FROM multiarch/alpine:x86_64-v3.6 as fluent-bit
+ENV FLB_MAJOR 0
+ENV FLB_MINOR 12
+ENV FLB_PATCH 1
+ENV FLB_VERSION 0.12.1
+
+RUN apk --no-cache --update add build-base ca-certificates cmake && \
+    wget -O "/tmp/fluent-bit-$FLB_VERSION.tar.gz" "http://fluentbit.io/releases/$FLB_MAJOR.$FLB_MINOR/fluent-bit-$FLB_VERSION.tar.gz" && \
+    cd /tmp && \
+    tar zxfv "fluent-bit-$FLB_VERSION.tar.gz" && \
+    cd "fluent-bit-$FLB_VERSION/build/" && \
+    cmake -DFLB_DEBUG=On -DFLB_TRACE=On ../ \
+      -DCMAKE_INSTALL_PREFIX=/fluent-bit/ && \
+    make && make install && \
+    rm -rf /tmp/* /fluent-bit/include /fluent-bit/lib* && \
+    apk del build-base
+
+RUN mkdir -p /fluent-bit/log
 
 
-MAINTAINER Scaleway <opensource@scaleway.com> (@scaleway)
-
+FROM multiarch/alpine:x86_64-v3.6
 
 # Environment
 ENV SCW_BASE_IMAGE scaleway/alpine:latest
@@ -47,10 +69,14 @@ RUN rc-update add sshd default\
  && rc-update add scw-initramfs-shutdown shutdown \
  && rc-status
 
-
 # Update permissions
 RUN chmod 700 /root
 
+# Custom dependencies
+COPY --from=node-exporter /bin/node_exporter /bin/node_exporter
+COPY --from=fluent-bit /fluent-bit /fluent-bit
+RUN apk add --no-cache \
+  libc6-compat git docker
 
 # Clean rootfs from image-builder
 RUN /usr/local/sbin/scw-builder-leave

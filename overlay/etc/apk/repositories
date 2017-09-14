@@ -5,4 +5,4 @@ http://nl.alpinelinux.org/alpine/latest-stable/main
 #@testing http://nl.alpinelinux.org/alpine/edge/testing
 
 # Uncomment the following line to enable community packages
-#http://nl.alpinelinux.org/alpine/edge/community
+http://nl.alpinelinux.org/alpine/edge/community

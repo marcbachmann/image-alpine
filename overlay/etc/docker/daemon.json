@@ -1,0 +1,11 @@
+{
+  "debug": false,
+  "exec-root": "/var/run/docker",
+  "pidfile": "/var/run/docker.pid",
+  "live-restore": true,
+  "max-concurrent-downloads": 5,
+  "max-concurrent-uploads": 5,
+  "metrics-addr" : "172.17.0.1:9323",
+  "experimental" : true,
+  "disable-legacy-registry": true
+}
