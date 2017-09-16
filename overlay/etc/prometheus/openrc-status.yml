@@ -1,0 +1,21 @@
+global:
+    config_version: 2
+
+input:
+    type: stdin
+
+grok:
+  patterns_dir: /etc/grok_exporter/patterns
+
+metrics:
+    - type: gauge
+      help: 'openrc service status, 1 for up, 0 for down'
+      name: openrc_service_up
+      match: '%{USERNAME:service}%{SPACE}\[%{SPACE}%{WORD:state}%{SPACE}\]'
+      value: '{{if eq .state "started"}}1{{else}}0{{end}}'
+      labels:
+          service: '{{.service}}'
+server:
+    protocol: http
+    host: 172.17.0.1
+    port: 9144

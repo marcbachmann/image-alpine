@@ -22,11 +22,25 @@ We use the Docker's building system and convert it at the end to a disk image th
 ## Install
 
 Build and write the image to /dev/nbd1 (see [documentation](https://doc.cloud.online.net/howto/create_image.html))
-
-    $ make install
-
+```
+$ make install
+```
 Full list of commands available at: [scaleway/image-tools](https://github.com/scaleway/image-tools/tree/master#commands)
 
----
+set those env variables in /etc/conf.d/docker-container-logs
+and /etc/conf.d/system-logs
 
-A project by [![Scaleway](https://avatars1.githubusercontent.com/u/5185491?v=3&s=42)](https://www.scaleway.com/)
+```
+HOST_NAME=foo
+HOST_IP=bar
+ELASTICSEARCH_HOST=fasdfsdf
+ELASTICSEARCH_PORT=fasdf
+ELASTICSEARCH_INDEX=fasf
+ELASTICSEARCH_TYPE=fasdfsf
+ELASTICSEARCH_USER=fasdf
+ELASTICSEARCH_PASSWORD=fasdfs
+
+rc-update add system-logs default
+rc-service docker-daemon-logs start
+
+```

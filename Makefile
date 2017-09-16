@@ -1,4 +1,4 @@
-NAME =			alpine
+NAME =			alpine-3.6
 VERSION =		latest
 VERSION_ALIASES =	3.6.0 3.6 3 edge
 TITLE =			Alpine Linux
@@ -8,7 +8,7 @@ VENDOR_URL =		http://www.alpinelinux.org
 DEFAULT_IMAGE_ARCH =	x86_64
 
 IMAGE_VOLUME_SIZE =	50G
-IMAGE_BOOTSCRIPT =	stable
+IMAGE_BOOTSCRIPT =	docker
 IMAGE_NAME =		Alpine Linux 3.6
 
 # This is specific to distribution images

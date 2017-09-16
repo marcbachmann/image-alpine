@@ -1,0 +1,37 @@
+#!/bin/bash
+set -eu
+
+get () {
+  /usr/local/bin/scw-metadata --cached $1
+}
+
+log () {
+  echo "$@" >&2
+}
+
+for i in $(get VOLUMES)
+do
+  if [ "$i" == "0" ]; then continue; fi
+
+  if [ -f /dev/sda1 ]; then
+    if ! lsblk /dev/sda1 --noheadings | grep part /; then
+      log "Mount Device /dev/sda1 on /mnt/tmp"
+      mount /dev/sda1 /dev/data
+    fi
+  fi
+
+  device=nbd$i
+  name=$(get 'VOLUMES_'$i'_NAME')
+  target=$device
+  if [ ! -f /mnt/data ]; then target=data; fi
+
+  exists=$(lsblk /dev/nbd$i --noheadings)
+  if echo $exists | grep 'disk /' > /dev/null; then log "Device '$name' is already mounted. skipping..."; continue; fi
+  if ! lsblk --noheadings -o mountpoint | grep /mnt/$target; then mkdir -p /mnt/$target; fi
+  if ! blkid /dev/$device -o value | grep -q ext; then
+    log "Format Device /dev/$device with the name '$name'"
+    yes | mkfs -t ext4 "/dev/$device"
+  fi
+  log "Mount Device /dev/$device with the name '$name' on /mnt/$target"
+  mount "/dev/$device" "/mnt/$target"
+done

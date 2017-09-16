@@ -1,0 +1,4 @@
+#!/bin/bash
+set -eu
+
+watch -t -n 5 /bin/rc-status | grok_exporter -config /etc/prometheus/openrc-status.yml

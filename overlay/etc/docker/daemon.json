@@ -1,11 +1,13 @@
 {
+  "data-root": "/mnt/data/docker",
   "debug": false,
+  "disable-legacy-registry": true,
   "exec-root": "/var/run/docker",
-  "pidfile": "/var/run/docker.pid",
+  "experimental" : true,
   "live-restore": true,
+  "log-driver": "json-file",
   "max-concurrent-downloads": 5,
   "max-concurrent-uploads": 5,
   "metrics-addr" : "172.17.0.1:9323",
-  "experimental" : true,
-  "disable-legacy-registry": true
+  "storage-driver": "overlay2"
 }

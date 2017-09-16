@@ -1,0 +1,17 @@
+#!/sbin/openrc-run
+# Copyright (c) 2017 Marc Bachmann <marc.brookman@gmail.com>
+# Released under the MIT license.
+
+description="fluent-bit system log forwarder"
+pidfile="/run/${RC_SVCNAME}.pid"
+command=/bin/fluent-bit
+command_args="-c /etc/fluent-bit/system-logs.conf"
+start_stop_daemon_args="--stdout /var/log/${RC_SVCNAME}.log --stderr /var/log/${RC_SVCNAME}.log"
+command_background="true"
+
+depend() {
+    need hostname localmount
+    before docker
+    provide logger
+}
+
