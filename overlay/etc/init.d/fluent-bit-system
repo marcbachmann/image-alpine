@@ -4,9 +4,9 @@
 
 description="fluent-bit system log forwarder"
 pidfile="/run/${RC_SVCNAME}.pid"
-command=/bin/fluent-bit
-command_args="-c /etc/fluent-bit/system-logs.conf"
-start_stop_daemon_args="--stdout /var/log/${RC_SVCNAME}.log --stderr /var/log/${RC_SVCNAME}.log"
+command="/usr/bin/env"
+command_args="HOST_IP=${HOST_IP} HOST_NAME=${HOST_NAME} /usr/bin/fluent-bit -q -c /etc/fluent-bit/system.conf"
+start_stop_daemon_args="--stdout /var/log/messages --stderr /var/log/messages"
 command_background="true"
 
 depend() {
@@ -14,4 +14,3 @@ depend() {
     before docker
     provide logger
 }
-

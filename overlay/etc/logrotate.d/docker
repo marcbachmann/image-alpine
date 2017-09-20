@@ -1,0 +1,2 @@
+/var/log/docker.log {}
+/var/log/docker_containers {}

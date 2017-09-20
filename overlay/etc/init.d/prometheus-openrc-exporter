@@ -5,7 +5,7 @@
 description="Export openrc service status using prometheus grok exporter"
 pidfile="/run/${RC_SVCNAME}.pid"
 command=/usr/local/bin/start-prometheus-openrc-exporter
-start_stop_daemon_args="--stdout /var/log/${RC_SVCNAME}.log --stderr /var/log/${RC_SVCNAME}.log"
+start_stop_daemon_args="--stdout /var/log/${RC_SVCNAME} --stderr /var/log/${RC_SVCNAME}"
 command_background="true"
 
 depend() {

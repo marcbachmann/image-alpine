@@ -27,21 +27,19 @@ RUN apk add --no-cache musl-dev go git oniguruma-dev && \
 FROM multiarch/alpine:x86_64-v3.6 as fluent-bit
 ENV FLB_MAJOR 0
 ENV FLB_MINOR 12
-ENV FLB_PATCH 1
-ENV FLB_VERSION 0.12.1
+ENV FLB_PATCH 2
+ENV FLB_VERSION 0.12.2
 
-RUN apk --no-cache --update add build-base ca-certificates cmake && \
+RUN apk --no-cache add gcc linux-headers musl-dev file build-base ca-certificates cmake libressl && \
     wget -O "/tmp/fluent-bit-$FLB_VERSION.tar.gz" "http://fluentbit.io/releases/$FLB_MAJOR.$FLB_MINOR/fluent-bit-$FLB_VERSION.tar.gz" && \
     cd /tmp && \
     tar zxfv "fluent-bit-$FLB_VERSION.tar.gz" && \
     cd "fluent-bit-$FLB_VERSION/build/" && \
-    cmake -DFLB_DEBUG=On -DFLB_TRACE=On ../ -DCMAKE_INSTALL_PREFIX=/fluent-bit/ && \
+    cmake -DBUILD_SHARED_LIBS=OFF -DITK_DYNAMIC_LOADING=OFF -DFLB_DEBUG=On -DFLB_TRACE=On -DFLB_JEMALLOC=On -DFLB_BUFFERING=On -DCMAKE_INSTALL_PREFIX=/ ../ && \
     make && make install
 
 
 FROM multiarch/alpine:x86_64-v3.6
-
-# Environment
 ENV SCW_BASE_IMAGE scaleway/alpine:latest
 
 # Adding and calling builder-enter
@@ -49,17 +47,8 @@ COPY ./overlay-image-tools/usr/local/sbin/scw-builder-enter /usr/local/sbin/
 RUN /bin/sh -e /usr/local/sbin/scw-builder-enter
 
 # Install scaleway packages
-RUN apk update \
- && apk add \
-    bash \
-    busybox-suid \
-    curl \
-    openssh \
-    tar \
-    wget \
- && apk upgrade \
-    openssl \
- && rm -rf /var/cache/apk/*
+RUN apk update && apk upgrade && \
+    apk add bash busybox-suid curl openssh tar wget libressl
 
 # Update permissions
 RUN chmod 700 /root
@@ -68,8 +57,8 @@ RUN chmod 700 /root
 RUN apk add --no-cache nano util-linux e2fsprogs
 
 # Logging
-RUN apk add --no-cache logrotate
-COPY --from=fluent-bit /fluent-bit/bin/fluent-bit /bin/fluent-bit
+RUN apk add --no-cache logrotate && mv /etc/periodic/daily/logrotate /etc/periodic/15min/
+COPY --from=fluent-bit /usr/bin/fluent-bit /usr/bin/fluent-bit
 
 # Prometheus
 COPY --from=node-exporter /bin/node_exporter /bin/node_exporter
@@ -102,8 +91,8 @@ RUN \
     rc-update add docker default && \
     rc-update add prometheus-node-exporter default  && \
     rc-update add prometheus-openrc-exporter default  && \
-    rc-update add system-logs default  && \
-    rc-update add docker-container-logs default
+    rc-update add fluent-bit-system default  && \
+    rc-update add fluent-bit-containers default
 
 
 # Clean rootfs from image-builder

@@ -6,7 +6,7 @@ description="Prometheus node exporter"
 pidfile="/run/${RC_SVCNAME}.pid"
 command=/bin/node_exporter
 command_args="-web.listen-address 172.17.0.1:9100"
-start_stop_daemon_args="--stdout /var/log/${RC_SVCNAME}.log --stderr /var/log/${RC_SVCNAME}.log"
+start_stop_daemon_args="--stdout /var/log/${RC_SVCNAME} --stderr /var/log/${RC_SVCNAME}"
 command_background="true"
 
 depend() {
