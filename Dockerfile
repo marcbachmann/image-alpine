@@ -5,9 +5,16 @@ RUN apk --no-cache add wget ca-certificates libc6-compat && \
     mkdir -p /tmp/install && cd /tmp/install && \
     wget -O /tmp/install/node_exporter.tar.gz "https://github.com/prometheus/node_exporter/releases/download/v$VERSION/node_exporter-$VERSION.linux-amd64.tar.gz" && \
     tar --strip-components=1 -xzf node_exporter.tar.gz && \
-    mv node_exporter /bin/node_exporter && \
-    rm -Rf /tmp/install
+    mv node_exporter /bin/node_exporter
 
+FROM multiarch/alpine:x86_64-v3.6 as process-exporter
+ENV VERSION=0.1.0
+
+RUN apk --no-cache add wget ca-certificates libc6-compat && \
+    mkdir -p /tmp/install && cd /tmp/install && \
+    wget -O /tmp/install/process-exporter.tar.gz "https://github.com/ncabatoff/process-exporter/releases/download/v$VERSION/process-exporter-$VERSION.linux-amd64.tar.gz" && \
+    tar --strip-components=1 -xzf process-exporter.tar.gz && \
+    mv process-exporter /bin/process_exporter
 
 FROM multiarch/alpine:x86_64-v3.6 as grok-exporter
 ENV VERSION=0.2.1
@@ -47,7 +54,8 @@ RUN apk add --no-cache syslog-ng logrotate && mv /etc/periodic/daily/logrotate /
 COPY --from=node-exporter /bin/node_exporter /bin/node_exporter
 COPY --from=grok-exporter /bin/grok_exporter /bin/grok_exporter
 COPY --from=grok-exporter /etc/grok_exporter /etc/grok_exporter
-RUN apk add --no-cache libc6-compat
+COPY --from=process-exporter /bin/process_exporter /bin/process_exporter
+# RUN apk add --no-cache libc6-compat
 
 # Docker
 RUN apk add --no-cache git docker
@@ -74,8 +82,10 @@ RUN \
     rc-update add cgroupfs-volumes default && \
     rc-update add nbd-volumes default && \
     rc-update add docker default && \
-    rc-update add prometheus-node-exporter default  && \
-    rc-update add prometheus-openrc-exporter default
+    rc-update add prometheus-node-exporter default
+
+    #  && \
+    #rc-update add prometheus-process-exporter default
 
 # Clean rootfs from image-builder
 RUN /usr/local/sbin/scw-builder-leave
