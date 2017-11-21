@@ -1,0 +1,37 @@
+/var/log/auth.log {
+  rotate 14
+  daily
+  missingok
+  notifempty
+  compress
+  postrotate
+    /etc/init.d/syslog-ng reload >/dev/null
+  endscript
+}
+
+/var/log/mail.log /var/log/mail.info /var/log/mail.warn /var/log/mail.err {
+  daily
+  missingok
+  notifempty
+  compress
+}
+
+/var/log/kern.log {
+  daily
+  missingok
+  notifempty
+  compress
+  postrotate
+    /etc/init.d/syslog-ng reload >/dev/null
+  endscript
+}
+
+/var/log/messages /var/log/error.log {
+  daily
+  missingok
+  notifempty
+  compress
+  postrotate
+    /etc/init.d/syslog-ng reload >/dev/null
+  endscript
+}

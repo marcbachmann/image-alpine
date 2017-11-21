@@ -1,0 +1,36 @@
+#!/sbin/openrc-run
+# Copyright 1999-2007 Gentoo Foundation
+# Copyright 2017 Marc Bachmann <marc.brookman@gmail.com>
+# Distributed under the terms of the GNU General Public License v2
+
+extra_started_commands="reload"
+
+depend() {
+  need hostname localmount
+  before net
+  provide logger
+}
+
+start() {
+  ebegin "Starting syslog-ng"
+  start_stop_daemon_args="--stdout /var/log/syslog-ng.log --stderr /var/log/syslog-ng.log"
+  start-stop-daemon --start --quiet --exec /usr/sbin/syslog-ng --pidfile /run/syslog-ng.pid
+  eend $?
+}
+
+stop() {
+  ebegin "Stopping syslog-ng"
+  start-stop-daemon --stop --quiet --pidfile /run/syslog-ng.pid --exec /usr/sbin/syslog-ng
+  eend $?
+}
+
+reload() {
+  if [ ! -f /run/syslog-ng.pid ]
+  then
+    eerror "syslog-ng not running!"
+    return 1
+  fi
+  ebegin "Reloading syslog-ng"
+  start-stop-daemon --signal HUP --pidfile /run/syslog-ng.pid --exec /usr/sbin/syslog-ng
+  eend $?
+}

@@ -1,11 +1,15 @@
 {
-  "data-root": "/mnt/data/docker",
   "debug": false,
   "disable-legacy-registry": true,
   "exec-root": "/run/docker",
+  "data-root": "/mnt/data/docker",
   "experimental" : true,
   "live-restore": true,
-  "log-driver": "fluentd",
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "20m",
+    "max-file": "3"
+  },
   "max-concurrent-downloads": 5,
   "max-concurrent-uploads": 5,
   "metrics-addr" : "172.17.0.1:9323",

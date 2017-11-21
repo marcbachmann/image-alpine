@@ -38,10 +38,10 @@ RUN apk update && apk upgrade && \
 RUN chmod 700 /root
 
 # Install custom dependencies
-RUN apk add --no-cache nano util-linux e2fsprogs
+RUN apk add --no-cache nano util-linux e2fsprogs fail2ban
 
 # Logging
-RUN apk add --no-cache logrotate && mv /etc/periodic/daily/logrotate /etc/periodic/15min/
+RUN apk add --no-cache syslog-ng logrotate && mv /etc/periodic/daily/logrotate /etc/periodic/15min/
 
 # Prometheus
 COPY --from=node-exporter /bin/node_exporter /bin/node_exporter
@@ -58,6 +58,7 @@ COPY ./overlay/ ./overlay-image-tools/ /
 
 # Configure scaleway autostart packages
 RUN rc-update add sshd default && \
+    rc-update add fail2ban default && \
     rc-update add scw-ssh-keys default && \
     rc-update add ntpd default && \
     rc-update add hostname default && \
@@ -69,6 +70,7 @@ RUN rc-update add sshd default && \
 
 # Configure custom autostart packages
 RUN \
+    rc-update add syslog-ng default && \
     rc-update add cgroupfs-volumes default && \
     rc-update add nbd-volumes default && \
     rc-update add docker default && \
