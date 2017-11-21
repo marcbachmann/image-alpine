@@ -5,12 +5,12 @@
 description="Update /etc/motd"
 
 depend() {
-    need net root
-    use dns
+  need net root
+  use dns
 }
 
 start() {
-    ebegin "Generating /etc/motd"
-    run-parts /etc/update-motd.d/ > /etc/motd
-    eend $?
+  ebegin "Generating /etc/motd"
+  run-parts /etc/update-motd.d/ > /etc/motd
+  eend $?
 }

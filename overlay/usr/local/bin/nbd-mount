@@ -16,7 +16,7 @@ do
   if [ -f /dev/sda1 ]; then
     if ! lsblk /dev/sda1 --noheadings | grep part /; then
       log "Mount Device /dev/sda1 on /mnt/tmp"
-      mount /dev/sda1 /dev/data
+      mount /dev/sda1 /mnt/tmp
     fi
   fi
 

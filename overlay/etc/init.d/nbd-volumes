@@ -1,16 +1,16 @@
 #!/sbin/openrc-run
-# Copyright (c) 2017 Marc Bachmann <marc.brookman@gmail.com>
+# Copyright 2017 Marc Bachmann <marc.brookman@gmail.com>
 # Released under the MIT license.
 
 description="Mounts network block devices"
 
 depend() {
-    need net localmount
-    before docker
+  need net localmount
+  before docker
 }
 
 start() {
-    ebegin "Mount network block devices"
-    /usr/local/bin/nbd-mount
-    eend $?
+  ebegin "Mount network block devices"
+  /usr/local/bin/nbd-mount
+  eend $?
 }

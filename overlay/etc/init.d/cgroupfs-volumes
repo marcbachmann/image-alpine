@@ -1,22 +1,22 @@
 #!/sbin/openrc-run
-# Copyright (c) 2017 Marc Bachmann <marc.brookman@gmail.com>
+# Copyright 2017 Marc Bachmann <marc.brookman@gmail.com>
 # Released under the MIT license.
 
 description="Mounts cgroupfs volumes for docker"
 
 depend() {
-    need net localmount
-    before docker
+  need net localmount
+  before docker
 }
 
 start() {
-    ebegin "Mount cgroup volumes"
-    /usr/local/bin/cgroupfs-mount
-    eend $?
+  ebegin "Mount cgroup volumes"
+  /usr/local/bin/cgroupfs-mount
+  eend $?
 }
 
 stop() {
-    ebegin "Unmount cgroup volumes"
-    /usr/local/bin/cgroupfs-umount
-    eend $?
+  ebegin "Unmount cgroup volumes"
+  /usr/local/bin/cgroupfs-umount
+  eend $?
 }
