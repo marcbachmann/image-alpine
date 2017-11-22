@@ -1,8 +1,8 @@
 http://nl.alpinelinux.org/alpine/latest-stable/main
 
 # Uncomment the following two lines to enable edge packages (considered as unstable)
-#http://nl.alpinelinux.org/alpine/edge/main
-#@testing http://nl.alpinelinux.org/alpine/edge/testing
+@edge http://nl.alpinelinux.org/alpine/edge/main
+@testing http://nl.alpinelinux.org/alpine/edge/testing
 
 # Uncomment the following line to enable community packages
 http://nl.alpinelinux.org/alpine/edge/community
