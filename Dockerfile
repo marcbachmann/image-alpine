@@ -82,5 +82,8 @@ RUN \
     rc-update add prometheus-process-exporter default && \
     rc-update add cadvisor default
 
+# Clean apk cache
+RUN rm -rf /var/cache/apk/*
+
 # Clean rootfs from image-builder
 RUN /usr/local/sbin/scw-builder-leave
