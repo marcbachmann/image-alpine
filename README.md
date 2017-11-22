@@ -27,20 +27,17 @@ $ make install
 ```
 Full list of commands available at: [scaleway/image-tools](https://github.com/scaleway/image-tools/tree/master#commands)
 
-set those env variables in /etc/conf.d/docker-container-logs
-and /etc/conf.d/system-logs
+# Customization
+
+Build the image on an Scaleway image-builder host:
+```
+make image_on_local
+```
 
 ```
-HOST_NAME=foo
-HOST_IP=bar
-ELASTICSEARCH_HOST=fasdfsdf
-ELASTICSEARCH_PORT=fasdf
-ELASTICSEARCH_INDEX=fasf
-ELASTICSEARCH_TYPE=fasdfsf
-ELASTICSEARCH_USER=fasdf
-ELASTICSEARCH_PASSWORD=fasdfs
-
-rc-update add system-logs default
-rc-service docker-daemon-logs start
-
+Exposed Ports (you should set up a firewall in case your host is public):
+ - 9100 (prometheus node metrics)
+ - 9101 (prometheus cadvisor metrics)
+ - 9256 (prometheus process metrics)
+ - 9323 (prometheus docker metrics)
 ```
