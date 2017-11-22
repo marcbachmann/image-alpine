@@ -26,6 +26,7 @@ RUN apk --no-cache add wget ca-certificates && \
 
 FROM multiarch/alpine:x86_64-v3.6
 ENV SCW_BASE_IMAGE scaleway/alpine:latest
+COPY ./overlay/etc/apk /etc/apk
 
 # Adding and calling builder-enter
 COPY ./overlay-image-tools/usr/local/sbin/scw-builder-enter /usr/local/sbin/
