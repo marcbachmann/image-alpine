@@ -79,7 +79,8 @@ RUN \
     rc-update add nbd-volumes default && \
     rc-update add docker default && \
     rc-update add prometheus-node-exporter default && \
-    rc-update add prometheus-process-exporter default
+    rc-update add prometheus-process-exporter default && \
+    rc-update add cadvisor default
 
 # Clean rootfs from image-builder
 RUN /usr/local/sbin/scw-builder-leave
