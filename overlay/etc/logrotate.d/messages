@@ -1,2 +1,8 @@
-# keep empty because that's handled by the syslog-ng logrotate config
-# If we don't override this file the system will add a default config
+/var/log/messages {
+  missingok
+  notifempty
+  compress
+  postrotate
+    /etc/init.d/syslog-ng reload >/dev/null
+  endscript
+}
