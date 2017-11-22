@@ -1,6 +1,7 @@
 FROM multiarch/alpine:x86_64-v3.6 as node-exporter
 ENV VERSION=0.14.0
 
+# available linux-386, linux-arm64, linux-amd64, linux-armv7, linux-armv6
 RUN apk --no-cache add wget ca-certificates libc6-compat && \
     mkdir -p /tmp/install && cd /tmp/install && \
     wget -O /tmp/install/node_exporter.tar.gz "https://github.com/prometheus/node_exporter/releases/download/v$VERSION/node_exporter-$VERSION.linux-amd64.tar.gz" && \
@@ -16,19 +17,12 @@ RUN apk --no-cache add wget ca-certificates libc6-compat && \
     tar --strip-components=1 -xzf process-exporter.tar.gz && \
     mv process-exporter /bin/process_exporter
 
-FROM multiarch/alpine:x86_64-v3.6 as grok-exporter
-ENV VERSION=0.2.1
-ENV GOPATH=/tmp/install
-ENV GOMODULE=github.com/fstab/grok_exporter
-ENV CGO_LDFLAGS=/usr/lib/libonig.a
+FROM multiarch/alpine:x86_64-v3.6 as cadvisor
+ENV VERSION=0.28.1
 
-RUN apk add --no-cache musl-dev go git oniguruma-dev && \
-    mkdir -p $GOPATH /etc/grok_exporter && \
-    go get -d $GOMODULE && \
-    cd $GOPATH/src/$GOMODULE && \
-    git checkout v$VERSION && git checkout -b v$VERSION && \
-    go build -ldflags "-X $GOMODULE/exporter.Version=$VERSION -X $GOMODULE/exporter.BuildDate=$(date +%Y-%m-%d) -X $GOMODULE/exporter.Branch=$(git rev-parse --abbrev-ref HEAD) -X $GOMODULE/exporter.Revision=$(git rev-parse --short HEAD)" -o /bin/grok_exporter && \
-    mv $GOPATH/src/$GOMODULE/logstash-patterns-core/patterns /etc/grok_exporter/patterns
+RUN apk --no-cache add wget ca-certificates && \
+    wget -O /bin/cadvisor "https://github.com/google/cadvisor/releases/download/v$VERSION/cadvisor" && \
+    chmod +x /bin/cadvisor
 
 FROM multiarch/alpine:x86_64-v3.6
 ENV SCW_BASE_IMAGE scaleway/alpine:latest
