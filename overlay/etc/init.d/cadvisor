@@ -1,0 +1,15 @@
+#!/sbin/openrc-run
+# Copyright 2017 Marc Bachmann <marc.brookman@gmail.com>
+# Released under the MIT license.
+
+description="Cadvisor for container metrics"
+pidfile="/run/${RC_SVCNAME}.pid"
+command=/usr/local/sbin/cadvisor
+command_args="-port 9101"
+start_stop_daemon_args="--stdout /var/log/${RC_SVCNAME}.log --stderr /var/log/${RC_SVCNAME}.log"
+command_background="true"
+
+depend() {
+  need net root
+  before docker
+}
