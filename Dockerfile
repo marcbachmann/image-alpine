@@ -53,7 +53,7 @@ COPY --from=cadvisor /bin/cadvisor /usr/local/sbin/cadvisor
 RUN apk add --no-cache libc6-compat
 
 # Docker
-RUN apk add --no-cache git docker
+RUN apk add --no-cache git docker=17.07.0-r0
 
 
 # Patch rootfs
