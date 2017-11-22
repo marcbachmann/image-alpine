@@ -45,11 +45,12 @@ RUN apk add --no-cache nano util-linux e2fsprogs fail2ban
 RUN apk add --no-cache syslog-ng logrotate && mv /etc/periodic/daily/logrotate /etc/periodic/15min/
 
 # Prometheus
-COPY --from=node-exporter /bin/node_exporter /bin/node_exporter
-COPY --from=grok-exporter /bin/grok_exporter /bin/grok_exporter
-COPY --from=grok-exporter /etc/grok_exporter /etc/grok_exporter
-COPY --from=process-exporter /bin/process_exporter /bin/process_exporter
-# RUN apk add --no-cache libc6-compat
+COPY --from=node-exporter /bin/node_exporter /usr/local/sbin/node_exporter
+COPY --from=process-exporter /bin/process_exporter /usr/local/sbin/process_exporter
+COPY --from=cadvisor /bin/cadvisor /usr/local/sbin/cadvisor
+
+# libc6-compat needed for node_exporter
+RUN apk add --no-cache libc6-compat
 
 # Docker
 RUN apk add --no-cache git docker
@@ -76,10 +77,8 @@ RUN \
     rc-update add cgroupfs-volumes default && \
     rc-update add nbd-volumes default && \
     rc-update add docker default && \
-    rc-update add prometheus-node-exporter default
-
-    #  && \
-    #rc-update add prometheus-process-exporter default
+    rc-update add prometheus-node-exporter default && \
+    rc-update add prometheus-process-exporter default
 
 # Clean rootfs from image-builder
 RUN /usr/local/sbin/scw-builder-leave

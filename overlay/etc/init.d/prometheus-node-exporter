@@ -4,7 +4,7 @@
 
 description="Prometheus node exporter"
 pidfile="/run/${RC_SVCNAME}.pid"
-command=/bin/node_exporter
+command=/usr/local/sbin/node_exporter
 command_args="-web.listen-address 0.0.0.0:9100"
 start_stop_daemon_args="--stdout /var/log/${RC_SVCNAME}.log --stderr /var/log/${RC_SVCNAME}.log"
 command_background="true"
