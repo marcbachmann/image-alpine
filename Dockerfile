@@ -49,15 +49,14 @@ COPY --from=node-exporter /bin/node_exporter /usr/local/sbin/node_exporter
 COPY --from=process-exporter /bin/process_exporter /usr/local/sbin/process_exporter
 COPY --from=cadvisor /bin/cadvisor /usr/local/sbin/cadvisor
 
+# Patch rootfs
+COPY ./overlay/ ./overlay-image-tools/ /
+
 # libc6-compat needed for node_exporter
 RUN apk add --no-cache libc6-compat
 
 # Docker
-RUN apk add --no-cache git docker=17.07.0-r0
-
-
-# Patch rootfs
-COPY ./overlay/ ./overlay-image-tools/ /
+RUN apk add --no-cache git docker=17.10.0-r0
 
 # Configure scaleway autostart packages
 RUN rc-update add sshd default && \
