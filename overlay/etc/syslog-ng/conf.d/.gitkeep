@@ -1,0 +1,3 @@
+Create syslog-ng config files in this directory
+Files ending with `.conf` are automatically imported.
+Files with starting with a `.` are ignored.
