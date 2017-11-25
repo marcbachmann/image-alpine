@@ -17,12 +17,10 @@ RUN apk --no-cache add wget ca-certificates libc6-compat && \
     tar --strip-components=1 -xzf process-exporter.tar.gz && \
     mv process-exporter /bin/process_exporter
 
-FROM multiarch/alpine:x86_64-v3.6 as cadvisor
-ENV VERSION=0.28.1
-
-RUN apk --no-cache add wget ca-certificates && \
-    wget -O /bin/cadvisor "https://github.com/google/cadvisor/releases/download/v$VERSION/cadvisor" && \
-    chmod +x /bin/cadvisor
+# Install patched cadvisor to fix https://github.com/google/cadvisor/issues/1704
+# Source: https://github.com/mfournier/cadvisor/commit/04fc0899f5002cd343fb283b553911ae40ab4c2e
+FROM camptocamp/cadvisor:v0.27.1_with-workaround-for-1704 as cadvisor
+RUN mv /usr/bin/cadvisor /bin/cadvisor
 
 FROM multiarch/alpine:x86_64-v3.6
 ENV SCW_BASE_IMAGE scaleway/alpine:latest
@@ -55,6 +53,9 @@ COPY ./overlay/ ./overlay-image-tools/ /
 
 # libc6-compat needed for node_exporter
 RUN apk add --no-cache libc6-compat
+
+# findutils is needed for cadvisor
+RUN apk add --no-cache findutils
 
 # Docker
 RUN apk add --no-cache git docker=17.10.0-r0
