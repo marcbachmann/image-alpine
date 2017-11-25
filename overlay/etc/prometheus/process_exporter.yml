@@ -1,19 +1,22 @@
 process_names:
   - comm:
     - sshd
-    - dockerd
-    - docker-containerd
     - cadvisor
     - node_exporter
-    - filebeat
     - ntpd
 
   - exe: ["/usr/bin/python2"]
     cmdline: ["/usr/bin/fail2ban-server"]
-    name: fail2ban-server
+    name: fail2ban
 
   - exe: ["/usr/sbin/syslog-ng"]
     name: syslog-ng
 
   - exe: ["process_exporter"]
     name: process_exporter
+
+  - exe: ["dockerd"]
+    name: dockerd
+
+  - exe: ["docker-containerd"]
+    name: containerd
