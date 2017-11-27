@@ -23,7 +23,6 @@ FROM camptocamp/cadvisor:v0.27.1_with-workaround-for-1704 as cadvisor
 RUN mv /usr/bin/cadvisor /bin/cadvisor
 
 FROM multiarch/alpine:x86_64-v3.6
-ENV SCW_BASE_IMAGE scaleway/alpine:latest
 COPY ./overlay/etc/apk /etc/apk
 
 # Adding and calling builder-enter
