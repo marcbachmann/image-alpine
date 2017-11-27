@@ -25,10 +25,6 @@ RUN mv /usr/bin/cadvisor /bin/cadvisor
 FROM multiarch/alpine:x86_64-v3.6
 COPY ./overlay/etc/apk /etc/apk
 
-# Adding and calling builder-enter
-COPY ./overlay-image-tools/usr/local/sbin/scw-builder-enter /usr/local/sbin/
-RUN /bin/sh -e /usr/local/sbin/scw-builder-enter
-
 # Install scaleway packages
 RUN apk update && apk upgrade && \
     apk add bash busybox-suid curl openssh tar wget libressl
@@ -82,8 +78,5 @@ RUN \
     rc-update add prometheus-process-exporter default && \
     rc-update add cadvisor default
 
-# Clean apk cache
-RUN rm -rf /var/cache/apk/*
-
-# Clean rootfs from image-builder
-RUN /usr/local/sbin/scw-builder-leave
+# Clean cache and logs
+RUN rm -rf /var/cache/apk/* && rm -Rf /root/.history /root/.bash_history /var/log/*

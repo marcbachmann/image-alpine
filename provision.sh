@@ -11,7 +11,7 @@ if [ "$SCALEWAY_ORGANIZATION" == "" ]; then
 	exit 1
 fi
 
-SCALEWAY_REGIONS=${REGIONS:-par1 ams1}
+SCALEWAY_REGIONS=${SCALEWAY_REGIONS:-par1 ams1}
 SOURCE_DIR=$PWD
 TMP_DIR=$TMPDIR/image-alpine
 
@@ -83,6 +83,7 @@ apply_terraform () {
 					"DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::='--force-confnew' install -y docker-engine jq",
 					"scw login --token $SCALEWAY_TOKEN --organization $SCALEWAY_ORGANIZATION --skip-ssh-key",
 					"git clone https://github.com/scaleway/image-tools && cd image-tools && git checkout 0236ac5e94800289d7b04cab82fc31bb127bb7c5",
+					"wget 'https://github.com/scaleway/scaleway-cli/releases/download/v1.14/scw_1.14_amd64.deb' -O /tmp/scw.deb && dpkg -i /tmp/scw.deb && rm -f /tmp/scw.deb",
 					"make IMAGE_DIR=/image-alpine REGION=$SCALEWAY_REGION scaleway_image"
 				]
 			}
