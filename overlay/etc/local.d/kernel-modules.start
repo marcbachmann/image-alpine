@@ -1,0 +1,5 @@
+#!/bin/sh
+/sbin/depmod -a
+modprobe btrfs
+modprobe nfs
+modprobe rpcsec_gss_krb5

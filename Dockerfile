@@ -68,7 +68,7 @@ RUN rc-update add sshd default && \
     rc-status
 
 # Configure custom autostart packages
-RUN \
+RUN rc-update add local default && \
     rc-update add loopback default && \
     rc-update add syslog-ng default && \
     rc-update add cgroupfs-volumes default && \
