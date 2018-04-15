@@ -17,10 +17,11 @@ RUN apk --no-cache add wget ca-certificates libc6-compat && \
     tar --strip-components=1 -xzf process-exporter.tar.gz && \
     mv process-exporter /bin/process_exporter
 
-# Install patched cadvisor to fix https://github.com/google/cadvisor/issues/1704
-# Source: https://github.com/mfournier/cadvisor/commit/04fc0899f5002cd343fb283b553911ae40ab4c2e
-FROM camptocamp/cadvisor:v0.27.1_with-workaround-for-1704 as cadvisor
-RUN mv /usr/bin/cadvisor /bin/cadvisor
+RUN go get -d github.com/google/cadvisor
+WORKDIR /go/src/github.com/google/cadvisor
+RUN git checkout v0.29.1
+RUN GO_CMD=build GOARCH=$ARCH ./build/build.sh && cp cadvisor /bin/cadvisor
+
 
 FROM multiarch/alpine:x86_64-v3.6
 COPY ./overlay/etc/apk /etc/apk
@@ -41,7 +42,7 @@ RUN apk add --no-cache syslog-ng logrotate && mv /etc/periodic/daily/logrotate /
 # Prometheus
 COPY --from=node-exporter /bin/node_exporter /usr/local/sbin/node_exporter
 COPY --from=process-exporter /bin/process_exporter /usr/local/sbin/process_exporter
-COPY --from=cadvisor /bin/cadvisor /usr/local/sbin/cadvisor
+COPY --from=exporters /bin/cadvisor /usr/local/sbin/cadvisor
 
 # Patch rootfs
 COPY ./overlay/ ./overlay-image-tools/ /
