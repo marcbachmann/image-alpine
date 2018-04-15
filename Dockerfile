@@ -1,21 +1,22 @@
-FROM multiarch/alpine:x86_64-v3.6 as node-exporter
-ENV VERSION=0.14.0
+ARG ARCH=amd64
 
-# available linux-386, linux-arm64, linux-amd64, linux-armv7, linux-armv6
-RUN apk --no-cache add wget ca-certificates libc6-compat && \
-    mkdir -p /tmp/install && cd /tmp/install && \
-    wget -O /tmp/install/node_exporter.tar.gz "https://github.com/prometheus/node_exporter/releases/download/v$VERSION/node_exporter-$VERSION.linux-amd64.tar.gz" && \
-    tar --strip-components=1 -xzf node_exporter.tar.gz && \
-    mv node_exporter /bin/node_exporter
+FROM ${ARCH}/golang:1.8 as exporters
+ARG ARCH=amd64
 
-FROM multiarch/alpine:x86_64-v3.6 as process-exporter
-ENV VERSION=0.1.0
+RUN go get -d github.com/prometheus/node_exporter
+WORKDIR /go/src/github.com/prometheus/node_exporter
+RUN git checkout v0.15.2 && GOARCH=$ARCH go build -o /bin/node_exporter
 
 RUN apk --no-cache add wget ca-certificates libc6-compat && \
     mkdir -p /tmp/install && cd /tmp/install && \
-    wget -O /tmp/install/process-exporter.tar.gz "https://github.com/ncabatoff/process-exporter/releases/download/v$VERSION/process-exporter-$VERSION.linux-amd64.tar.gz" && \
+    wget -O /tmp/install/process-exporter.tar.gz "https://github.com/ncabatoff/process-exporter/releases/download/v0.1.0/process-exporter-$VERSION.linux-$ARCH.tar.gz" && \
     tar --strip-components=1 -xzf process-exporter.tar.gz && \
     mv process-exporter /bin/process_exporter
+
+# For some reason this only works when executing the build manually
+# RUN go get -d github.com/ncabatoff/process-exporter
+# WORKDIR /go/src/github.com/ncabatoff/process-exporter
+# RUN git checkout v0.2.0 && GOARCH=$ARCH go build -o /bin/process_exporter -a -tags netgo
 
 RUN go get -d github.com/google/cadvisor
 WORKDIR /go/src/github.com/google/cadvisor
@@ -23,7 +24,7 @@ RUN git checkout v0.29.1
 RUN GO_CMD=build GOARCH=$ARCH ./build/build.sh && cp cadvisor /bin/cadvisor
 
 
-FROM multiarch/alpine:x86_64-v3.6
+FROM multiarch/alpine:${ARCH}-v3.7
 COPY ./overlay/etc/apk /etc/apk
 
 # Install scaleway packages
@@ -40,8 +41,8 @@ RUN apk add --no-cache nano util-linux e2fsprogs fail2ban
 RUN apk add --no-cache syslog-ng logrotate && mv /etc/periodic/daily/logrotate /etc/periodic/15min/
 
 # Prometheus
-COPY --from=node-exporter /bin/node_exporter /usr/local/sbin/node_exporter
-COPY --from=process-exporter /bin/process_exporter /usr/local/sbin/process_exporter
+COPY --from=exporters /bin/node_exporter /usr/local/sbin/node_exporter
+COPY --from=exporters /bin/process_exporter /usr/local/sbin/process_exporter
 COPY --from=exporters /bin/cadvisor /usr/local/sbin/cadvisor
 
 # Patch rootfs
