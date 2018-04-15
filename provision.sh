@@ -81,9 +81,9 @@ apply_terraform () {
 				inline = [
 					"apt-get update",
 					"DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::='--force-confnew' install -y docker-engine jq",
+					"wget 'https://github.com/scaleway/scaleway-cli/releases/download/v1.14/scw-linux-amd64' -O /usr/bin/scw && chmod +x /usr/bin/scw",
 					"scw login --token $SCALEWAY_TOKEN --organization $SCALEWAY_ORGANIZATION --skip-ssh-key",
-					"git clone https://github.com/scaleway/image-tools && cd image-tools && git checkout 0236ac5e94800289d7b04cab82fc31bb127bb7c5",
-					"wget 'https://github.com/scaleway/scaleway-cli/releases/download/v1.14/scw_1.14_amd64.deb' -O /tmp/scw.deb && dpkg -i /tmp/scw.deb && rm -f /tmp/scw.deb",
+					"git clone https://github.com/scaleway/image-tools && cd image-tools && git checkout a707ed70599803563d4bf984d4e8a70297ce3737",
 					"make IMAGE_DIR=/image-alpine REGION=$SCALEWAY_REGION scaleway_image"
 				]
 			}
