@@ -55,7 +55,7 @@ RUN apk add --no-cache libc6-compat
 RUN apk add --no-cache findutils
 
 # Docker
-RUN apk add --no-cache git docker=17.10.0-r0
+RUN apk add --no-cache git docker=18.03.0-r0
 
 # Configure scaleway autostart packages
 RUN rc-update add sshd default && \
