@@ -1,5 +1,6 @@
 #!/bin/sh
 /sbin/depmod -a
 modprobe btrfs
+modprobe overlay
 modprobe nfs
 modprobe rpcsec_gss_krb5
